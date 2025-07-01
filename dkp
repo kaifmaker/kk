@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #fdbb2d;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .player-turn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .player-indicator {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .scores {
+            display: flex;
+            gap: 15px;
+        }
+
+        .score-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 8px;
+            color: white;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .x-score .score-value {
+            color: #ff5252;
+        }
+
+        .o-score .score-value {
+            color: #4fc3f7;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .cell {
+            aspect-ratio: 1/1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cell:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .cell.x {
+            color: #ff5252;
+            text-shadow: 0 0 10px rgba(255, 82, 82, 0.5);
+        }
+
+        .cell.o {
+            color: #4fc3f7;
+            text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+        }
+
+        .cell.win {
+            background: rgba(76, 175, 80, 0.3);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .controls {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-restart {
+            background: linear-gradient(to right, #ff5252, #ff4081);
+            color: white;
+        }
+
+        .btn-reset {
+            background: linear-gradient(to right, #2196f3, #21cbf3);
+            color: white;
+        }
+
+        .message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .message.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .message-content {
+            background: linear-gradient(135deg, #141e30, #243b55);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            transform: scale(0.8);
+            transition: transform 0.5s ease;
+        }
+
+        .message.show .message-content {
+            transform: scale(1);
+        }
+
+        .message h2 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .winner-text {
+            font-size: 5rem;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .x-win {
+            color: #ff5252;
+        }
+
+        .o-win {
+            color: #4fc3f7;
+        }
+
+        .draw {
+            color: #ffd54f;
+        }
+
+        .btn-play-again {
+            background: linear-gradient(to right, #00c853, #64dd17);
+            color: white;
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            border: none;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 200, 83, 0.4);
+        }
+
+        .btn-play-again:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 200, 83, 0.6);
+        }
+
+        @media (max-width: 500px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .cell {
+                font-size: 3rem;
+            }
+            
+            .game-info {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .scores {
+                width: 100%;
+                justify-content: space-around;
+            }
+            
+            .message-content {
+                padding: 30px 20px;
+            }
+            
+            .message h2 {
+                font-size: 2rem;
+            }
+            
+            .winner-text {
+                font-size: 4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>TIC TAC TOE</h1>
+            <div class="subtitle">The Classic Strategy Game</div>
+        </header>
+        
+        <div class="game-info">
+            <div class="player-turn">
+                <span>Current Player:</span>
+                <div class="player-indicator" id="current-player">X</div>
+            </div>
+            
+            <div class="scores">
+                <div class="score-box x-score">
+                    <div class="score-label">PLAYER X</div>
+                    <div class="score-value" id="x-score">0</div>
+                </div>
+                <div class="score-box o-score">
+                    <div class="score-label">PLAYER O</div>
+                    <div class="score-value" id="o-score">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-board" id="game-board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-restart" id="restart-btn">
+                <i class="fas fa-redo"></i> Restart Game
+            </button>
+            <button class="btn btn-reset" id="reset-btn">
+                <i class="fas fa-trash-alt"></i> Reset Scores
+            </button>
+        </div>
+    </div>
+    
+    <div class="message" id="message">
+        <div class="message-content">
+            <h2 id="result-title">Game Over!</h2>
+            <div class="winner-text" id="winner-text"></div>
+            <button class="btn-play-again" id="play-again-btn">
+                Play Again
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game state variables
+        let currentPlayer = 'X';
+        let gameBoard = ['', '', '', '', '', '', '', '', ''];
+        let gameActive = true;
+        let xWins = 0;
+        let oWins = 0;
+        
+        // Winning combinations
+        const winPatterns = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [2, 4, 6]             // Diagonals
+        ];
+        
+        // DOM elements
+        const cells = document.querySelectorAll('.cell');
+        const currentPlayerEl = document.getElementById('current-player');
+        const xScoreEl = document.getElementById('x-score');
+        const oScoreEl = document.getElementById('o-score');
+        const restartBtn = document.getElementById('restart-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const messageEl = document.getElementById('message');
+        const resultTitleEl = document.getElementById('result-title');
+        const winnerTextEl = document.getElementById('winner-text');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        
+        // Initialize the game
+        function initGame() {
+            cells.forEach(cell => {
+                cell.addEventListener('click', handleCellClick);
+                cell.classList.remove('x', 'o', 'win');
+                cell.textContent = '';
+            });
+            
+            gameBoard = ['', '', '', '', '', '', '', '', ''];
+            gameActive = true;
+            currentPlayer = 'X';
+            updateCurrentPlayer();
+        }
+        
+        // Handle cell click
+        function handleCellClick(e) {
+            const cell = e.target;
+            const index = parseInt(cell.getAttribute('data-index'));
+            
+            // Check if cell is empty and game is active
+            if (gameBoard[index] !== '' || !gameActive) return;
+            
+            // Update game state
+            gameBoard[index] = currentPlayer;
+            cell.textContent = currentPlayer;
+            cell.classList.add(currentPlayer.toLowerCase());
+            
+            // Check for win or draw
+            if (checkWin()) {
+                endGame(`${currentPlayer} Wins!`);
+                if (currentPlayer === 'X') {
+                    xWins++;
+                    xScoreEl.textContent = xWins;
+                } else {
+                    oWins++;
+                    oScoreEl.textContent = oWins;
+                }
+                return;
+            }
+            
+            if (checkDraw()) {
+                endGame("It's a Draw!");
+                return;
+            }
+            
+            // Switch player
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            updateCurrentPlayer();
+        }
+        
+        // Check for win
+        function checkWin() {
+            for (const pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+                    // Highlight winning cells
+                    cells[a].classList.add('win');
+                    cells[b].classList.add('win');
+                    cells[c].classList.add('win');
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        // Check for draw
+        function checkDraw() {
+            return !gameBoard.includes('');
+        }
+        
+        // End the game
+        function endGame(message) {
+            gameActive = false;
+            
+            // Show message
+            resultTitleEl.textContent = message.includes('Wins') ? 'Victory!' : 'Game Over!';
+            
+            if (message.includes('X')) {
+                winnerTextEl.textContent = 'X';
+                winnerTextEl.className = 'winner-text x-win';
+            } else if (message.includes('O')) {
+                winnerTextEl.textContent = 'O';
+                winnerTextEl.className = 'winner-text o-win';
+            } else {
+                winnerTextEl.textContent = 'Draw';
+                winnerTextEl.className = 'winner-text draw';
+            }
+            
+            messageEl.classList.add('show');
+        }
+        
+        // Update current player display
+        function updateCurrentPlayer() {
+            currentPlayerEl.textContent = currentPlayer;
+            currentPlayerEl.className = `player-indicator ${currentPlayer.toLowerCase()}-score`;
+        }
+        
+        // Event listeners
+        restartBtn.addEventListener('click', initGame);
+        
+        resetBtn.addEventListener('click', () => {
+            xWins = 0;
+            oWins = 0;
+            xScoreEl.textContent = '0';
+            oScoreEl.textContent = '0';
+            initGame();
+        });
+        
+        playAgainBtn.addEventListener('click', () => {
+            messageEl.classList.remove('show');
+            initGame();
+        });
+        
+        // Initialize the game
+        initGame();
+    </script>
+</body>
+</html>
